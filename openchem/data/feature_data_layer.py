@@ -1,4 +1,3 @@
-
 import numpy as np
 
 from torch.utils.data import Dataset
@@ -29,7 +28,7 @@ class FeatureDataset(Dataset):
                  delimiter=',',
                  return_smiles=False,
                  get_features_args=None):
-        super(FeatureDataset, self).__init__()
+        super().__init__()
         self.return_smiles = return_smiles
         self.get_features = get_features
         data = read_smiles_property_file(filename, cols_to_read, delimiter)

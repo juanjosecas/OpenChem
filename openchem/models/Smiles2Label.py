@@ -17,7 +17,7 @@ class Smiles2Label(OpenChemModel):
 
     """
     def __init__(self, params):
-        super(Smiles2Label, self).__init__(params)
+        super().__init__(params)
         self.embedding = self.params['embedding']
         self.embed_params = self.params['embedding_params']
         self.Embedding = self.embedding(self.embed_params)

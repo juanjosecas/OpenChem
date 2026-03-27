@@ -33,7 +33,7 @@ class MultitaskLoss(_WeightedLoss):
 
     """
     def __init__(self, ignore_index, n_tasks):
-        super(MultitaskLoss, self).__init__(reduction='none')
+        super().__init__(reduction='none')
         self.n_tasks = n_tasks
         self.ignore_index = ignore_index
 

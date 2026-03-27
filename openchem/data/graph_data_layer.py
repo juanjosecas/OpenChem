@@ -39,7 +39,7 @@ class GraphDataset(Dataset):
                  allowed_atoms=None,
                  return_smiles=False,
                  **kwargs):
-        super(GraphDataset, self).__init__()
+        super().__init__()
         assert (get_bond_attributes is None) == (edge_attributes is None)
         self.return_smiles = return_smiles
         self.restrict_min_atoms = restrict_min_atoms
@@ -49,7 +49,8 @@ class GraphDataset(Dataset):
         self.has_3D = has_3D
 
         if file_format == "pickled":
-            data = pickle.load(open(filename, "rb"))
+            with open(filename, "rb") as fh:
+                data = pickle.load(fh)
 
             # this cleanup must be consistent with sanitize_smiles
             mn, mx = restrict_min_atoms, restrict_max_atoms
@@ -164,7 +165,7 @@ class GraphDataset(Dataset):
 
 class BFSGraphDataset(GraphDataset):
     def __init__(self, *args, **kwargs):
-        super(BFSGraphDataset, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
         self.random_order = kwargs["random_order"]
         self.max_prev_nodes = kwargs["max_prev_nodes"]
         self.num_edge_classes = kwargs
@@ -182,7 +183,7 @@ class BFSGraphDataset(GraphDataset):
             # define relabelling from Periodic Table numbers to {0, 1, ...}
             unique_labels = set()
             for index in range(len(self)):
-                sample = super(BFSGraphDataset, self).__getitem__(index)
+                sample = super().__getitem__(index)
                 node_feature_matrix = sample['node_feature_matrix']
                 adj_matrix = sample['adj_matrix']
 
@@ -219,7 +220,7 @@ class BFSGraphDataset(GraphDataset):
             self.species_converter = SpeciesConverter(consts.species)
 
     def __getitem__(self, index):
-        sample = super(BFSGraphDataset, self).__getitem__(index)
+        sample = super().__getitem__(index)
         adj_original = sample['adj_matrix']
         node_feature_matrix = sample['node_feature_matrix']
         num_nodes = self.num_atoms_all[index]
@@ -265,7 +266,7 @@ class BFSGraphDataset(GraphDataset):
             for i in range(36):
                 classes[d_array >= 10.0*i] = i + 1
             padding_zeros = np.zeros((self.max_size - num_atoms, 3))
-            classes = np.concatenate((np.zeros((2)), classes, -1*np.ones(self.max_size - num_atoms + 1)))
+            classes = np.concatenate((np.zeros(2), classes, -np.ones(self.max_size - num_atoms + 1)))
             xyz_bfs = np.concatenate((xyz_bfs, padding_zeros), axis=0)
         ii, jj = np.where(adj)
         max_prev_nodes_local = np.abs(ii - jj).max()

@@ -39,7 +39,7 @@ class SmilesDataset(Dataset):
                  sanitize=True,
                  flip=False,
                  return_smiles=False):
-        super(SmilesDataset, self).__init__()
+        super().__init__()
         self.tokenize = tokenize
         self.return_smiles = return_smiles
         data = read_smiles_property_file(filename, cols_to_read, delimiter)

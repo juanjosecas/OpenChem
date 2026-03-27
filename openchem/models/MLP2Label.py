@@ -14,7 +14,7 @@ class MLP2Label(OpenChemModel):
 
     """
     def __init__(self, params):
-        super(MLP2Label, self).__init__(params)
+        super().__init__(params)
         self.mlp = self.params['mlp']
         self.mlp_params = self.params['mlp_params']
         self.MLP = self.mlp(self.mlp_params)

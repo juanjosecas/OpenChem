@@ -24,7 +24,7 @@ class OpenChemModel(nn.Module):
     OpenChemModel.
     """
     def __init__(self, params):
-        super(OpenChemModel, self).__init__()
+        super().__init__()
         check_params(params, self.get_required_params(), self.get_optional_params())
         if 'lr_scheduler' not in params.keys():
             params['lr_scheduler'] = None
@@ -167,8 +167,10 @@ def fit(model, scheduler, train_loader, optimizer, criterion, params, eval=False
 
         if epoch % print_every == 0:
             if comm.is_main_process():
-                textlogger.info('TRAINING: [Time: %s, Epoch: %d, Progress: %d%%, '
-                                'Loss: %.4f]' % (time_since(start), epoch, epoch / n_epochs * 100, cur_loss))
+                textlogger.info(
+                    f'TRAINING: [Time: {time_since(start)}, Epoch: {epoch}, '
+                    f'Progress: {epoch / n_epochs * 100:.0f}%, Loss: {cur_loss:.4f}]'
+                )
             if eval:
                 assert val_loader is not None
                 val_loss, metrics = evaluate(model, val_loader, criterion, epoch=epoch)
@@ -190,14 +192,14 @@ def fit(model, scheduler, train_loader, optimizer, criterion, params, eval=False
                     tag = tag.replace('.', '/')
                     if torch.std(value).item() < 1e-3 or \
                             torch.isnan(torch.std(value)).item():
-                        textlogger.warning("Warning: {} has zero variance ".format(tag) + "(i.e. constant vector)")
+                        textlogger.warning(f"Warning: {tag} has zero variance " + "(i.e. constant vector)")
                     else:
                         log_value = value.detach().cpu().numpy()
                         writer.add_histogram(tag, log_value, epoch + 1)
                         #logger.histo_summary(
                         #    tag, log_value, epoch + 1)
                         if value.grad is None:
-                            print("Warning: {} grad is undefined".format(tag))
+                            print(f"Warning: {tag} grad is undefined")
                         else:
                             log_value_grad = value.grad.detach().cpu().numpy()
                             writer.add_histogram(tag + "/grad", log_value_grad, epoch + 1)
@@ -273,17 +275,17 @@ def evaluate(model, data_loader, criterion=None, epoch=None):
     metrics = np.mean(metrics)
 
     if task == "graph_generation":
-        f = open(logdir + "/debug_smiles_epoch_" + str(epoch) + ".smi", "w")
-        if isinstance(metrics, list) and len(metrics) == len(prediction):
-            for i in range(len(prediction)):
-                f.writelines(str(prediction[i]) + "," + str(metrics[i]) + "\n")
-        else:
-            for i in range(len(prediction)):
-                f.writelines(str(prediction[i]) + "\n")
-            f.close()
+        smiles_path = f"{logdir}/debug_smiles_epoch_{epoch}.smi"
+        with open(smiles_path, "w") as f:
+            if isinstance(metrics, list) and len(metrics) == len(prediction):
+                for i in range(len(prediction)):
+                    f.writelines(str(prediction[i]) + "," + str(metrics[i]) + "\n")
+            else:
+                for i in range(len(prediction)):
+                    f.writelines(str(prediction[i]) + "\n")
 
     if comm.is_main_process():
-        textlogger.info('EVALUATION: [Time: %s, Loss: %.4f, Metrics: %.4f]' % (time_since(start), cur_loss, metrics))
+        textlogger.info(f'EVALUATION: [Time: {time_since(start)}, Loss: {cur_loss:.4f}, Metrics: {metrics:.4f}]')
 
     return cur_loss, metrics
 
@@ -318,7 +320,7 @@ def predict(model, data_loader, eval=True):
             batch_input, batch_object = model.cast_inputs(sample_batched,
                                                           task,
                                                           use_cuda,
-                                                          for_predction=True)
+                                                          for_prediction=True)
         predicted = model(batch_input, eval=True)
         if hasattr(predicted, 'detach'):
             predicted = predicted.detach().cpu().numpy()
@@ -327,24 +329,23 @@ def predict(model, data_loader, eval=True):
 
     if task == 'classification':
         prediction = np.argmax(prediction, axis=1)
-    f = open(logdir + "/predictions.txt", "w")
     assert len(prediction) == len(samples)
 
     if comm.is_main_process():
-        for i in range(len(prediction)):
-            tmp = [chr(c) for c in samples[i]]
-            tmp = ''.join(tmp)
-            if " " in tmp:
-                tmp = tmp[:tmp.index(" ")]
-                to_write = [str(pred) for pred in prediction[i]]
-                to_write = ",".join(to_write)
-            f.writelines(tmp + "," + to_write + "\n")
-        f.close()
+        with open(f"{logdir}/predictions.txt", "w") as f:
+            for i in range(len(prediction)):
+                tmp = [chr(c) for c in samples[i]]
+                tmp = ''.join(tmp)
+                if " " in tmp:
+                    tmp = tmp[:tmp.index(" ")]
+                    to_write = [str(pred) for pred in prediction[i]]
+                    to_write = ",".join(to_write)
+                f.writelines(tmp + "," + to_write + "\n")
 
     if comm.is_main_process():
-        textlogger.info('Predictions saved to ' + logdir + "/predictions.txt")
+        textlogger.info(f'Predictions saved to {logdir}/predictions.txt')
         textlogger.info(
-            'PREDICTION: [Time: %s, Number of samples: %d]' % (time_since(start), len(prediction))
+            f'PREDICTION: [Time: {time_since(start)}, Number of samples: {len(prediction)}]'
         )
 
 

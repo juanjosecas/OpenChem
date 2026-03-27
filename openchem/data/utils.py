@@ -22,7 +22,7 @@ rdBase.DisableLog('rdApp.error')
 
 class DummyDataset(Dataset):
     def __init__(self, size=1):
-        super(DummyDataset, self).__init__()
+        super().__init__()
         self.size = size
 
     def __len__(self):
@@ -39,7 +39,7 @@ class DummyDataset(Dataset):
         }
 
 
-class DummyDataLoader(object):
+class DummyDataLoader:
     def __init__(self, batch_size):
         self.batch_size = 32  #batch_size
         self.current = 0
@@ -183,10 +183,10 @@ def sanitize_smiles(smiles,
     num_bad = len(smiles) - len(idx)
 
     if len(idx) != len(smiles) and logging == "warn":
-        warnings.warn('{:d}/{:d} unsanitized smiles ({:.1f}%)'.format(num_bad, len(smiles), 100 * invalid_rate))
+        warnings.warn(f'{num_bad:d}/{len(smiles):d} unsanitized smiles ({100 * invalid_rate:.1f}%)')
     elif logging == "info":
-        print("Valid: {}/{} ({:.2f}%)".format(len(idx), len(smiles), 100 * (1 - invalid_rate)))
-        print("Unique valid: {:.2f}%".format(100 * valid_unique_rate))
+        print(f"Valid: {len(idx)}/{len(smiles)} ({100 * (1 - invalid_rate):.2f}%)")
+        print(f"Unique valid: {100 * valid_unique_rate:.2f}%")
 
     if return_num_atoms and return_max_len:
         return new_smiles, idx, num_atoms, max(smiles_lens)
@@ -220,12 +220,12 @@ def canonize_smiles(smiles, sanitize=True):
         try:
             new_smiles.append(Chem.MolToSmiles(Chem.MolFromSmiles(sm, sanitize=sanitize)))
             idx.append(i)
-        except:
+        except Exception:
             new_smiles.append('')
 
         if len(idx) != len(smiles):
             invalid_rate = 1.0 - len(idx) / len(smiles)
-            warnings.warn('Proportion of unsanitized smiles is %.3f ' % (invalid_rate))
+            warnings.warn(f'Proportion of unsanitized smiles is {invalid_rate:.3f} ')
     return new_smiles
 
 
@@ -246,11 +246,10 @@ def save_smi_to_file(filename, smiles, unique=True):
         smiles = list(set(smiles))
     else:
         smiles = list(smiles)
-    f = open(filename, 'w')
-    for mol in smiles:
-        f.writelines([mol, '\n'])
-    f.close()
-    return f.closed
+    with open(filename, 'w') as f:
+        for mol in smiles:
+            f.writelines([mol, '\n'])
+    return True
 
 
 def read_smi_file(filename, unique=True):
@@ -266,16 +265,15 @@ def read_smi_file(filename, unique=True):
         was successfully completed or not.
     If 'unique=True' this list contains only unique copies.
     """
-    f = open(filename, 'r')
     molecules = []
-    for line in f:
-        molecules.append(line[:-1])
+    with open(filename) as f:
+        for line in f:
+            molecules.append(line[:-1])
     if unique:
         molecules = list(set(molecules))
     else:
         molecules = list(molecules)
-    f.close()
-    return molecules, f.closed
+    return molecules, True
 
 
 def get_tokens(smiles, tokens=None):
@@ -295,7 +293,7 @@ def get_tokens(smiles, tokens=None):
         tokens = list(set(''.join(smiles)))
         tokens = sorted(tokens)
         tokens = ''.join(tokens)
-    token2idx = dict((token, i) for i, token in enumerate(tokens))
+    token2idx = {token: i for i, token in enumerate(tokens)}
     num_tokens = len(tokens)
     return tokens, token2idx, num_tokens
 
@@ -318,12 +316,13 @@ def time_since(since):
     s = time.time() - since
     m = math.floor(s / 60)
     s -= m * 60
-    return '%dm %ds' % (m, s)
+    return f'{m}m {s:.0f}s'
 
 
 def read_smiles_property_file(path, cols_to_read, delimiter=',', keep_header=False):
-    reader = csv.reader(open(path, 'r'), delimiter=delimiter)
-    data = list(reader)
+    with open(path) as csv_file:
+        reader = csv.reader(csv_file, delimiter=delimiter)
+        data = list(reader)
     if keep_header:
         start_position = 0
     else:
@@ -337,14 +336,13 @@ def read_smiles_property_file(path, cols_to_read, delimiter=',', keep_header=Fal
 
 
 def save_smiles_property_file(path, smiles, labels, delimiter=','):
-    f = open(path, 'w')
     n_targets = labels.shape[1]
-    for i in range(len(smiles)):
-        f.writelines(smiles[i])
-        for j in range(n_targets):
-            f.writelines(delimiter + str(labels[i, j]))
-        f.writelines('\n')
-    f.close()
+    with open(path, 'w') as f:
+        for i in range(len(smiles)):
+            f.writelines(smiles[i])
+            for j in range(n_targets):
+                f.writelines(delimiter + str(labels[i, j]))
+            f.writelines('\n')
 
 
 def process_smiles(smiles,

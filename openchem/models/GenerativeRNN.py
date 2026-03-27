@@ -8,7 +8,7 @@ import numpy as np
 
 class GenerativeRNN(OpenChemModel):
     def __init__(self, params):
-        super(GenerativeRNN, self).__init__(params)
+        super().__init__(params)
         self.has_stack = params['has_stack']
         if self.has_stack:
             self.Stack = StackAugmentation(use_cuda=self.use_cuda, **self.params['stack_params'])

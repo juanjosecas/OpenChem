@@ -34,7 +34,8 @@ def readFragmentScores(name='fpscores'):
     # generate the full path filename:
     if name == "fpscores":
         name = op.join(op.dirname(__file__), name)
-    _fscores = pickle.load(gzip.open('%s.pkl.gz' % name))
+    with gzip.open(f'{name}.pkl.gz') as gz_file:
+        _fscores = pickle.load(gz_file)
     outDict = {}
     for i in _fscores:
         for j in range(1, len(i)):
@@ -120,7 +121,7 @@ def processMols(mols):
         s = calculateScore(m)
 
         smiles = Chem.MolToSmiles(m)
-        print(smiles + "\t" + m.GetProp('_Name') + "\t%3f" % s)
+        print(f"{smiles}\t{m.GetProp('_Name')}\t{s:3f}")
 
 
 if __name__ == '__main__':
@@ -136,7 +137,7 @@ if __name__ == '__main__':
     processMols(suppl)
     t4 = time.time()
 
-    print('Reading took %.2f seconds. Calculating took %.2f seconds' % ((t2 - t1), (t4 - t3)), file=sys.stderr)
+    print(f'Reading took {t2 - t1:.2f} seconds. Calculating took {t4 - t3:.2f} seconds', file=sys.stderr)
 
 #
 #  Copyright (c) 2013, Novartis Institutes for BioMedical Research Inc.

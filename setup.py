@@ -4,7 +4,7 @@ OpenChem -- Deep Learning toolkit for Computational Chemistry and Drug Design
 
 from setuptools import setup, find_packages
 
-with open("README.md", "r") as fh:
+with open("README.md") as fh:
     long_description = fh.read()
 
 setup_attrs = {
@@ -24,9 +24,11 @@ setup_attrs = {
         'tensorboard',
         'networkx',
         'tqdm',
-        'torchani'
+        'torchani',
+        'joblib',
+        'pillow',
     ],
-    'python_requires': ">=3.5",
+    'python_requires': ">=3.11",
     'zip_safe': False
 }
 

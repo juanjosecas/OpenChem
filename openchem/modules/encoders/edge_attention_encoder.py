@@ -8,7 +8,7 @@ from openchem.layers.gcn import GraphConvolution
 
 class GraphEdgeAttentionEncoder(OpenChemEncoder):
     def __init__(self, params, use_cuda):
-        super(GraphEdgeAttentionEncoder, self).__init__(params, use_cuda)
+        super().__init__(params, use_cuda)
         check_params(params, self.get_required_params(), self.get_optional_params())
         self.n_layers = params['n_layers']
         self.attr_size = params['edge_attr_sizes']

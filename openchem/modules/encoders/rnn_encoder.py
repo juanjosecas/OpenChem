@@ -9,7 +9,7 @@ from openchem.utils.utils import check_params
 
 class RNNEncoder(OpenChemEncoder):
     def __init__(self, params, use_cuda):
-        super(RNNEncoder, self).__init__(params, use_cuda)
+        super().__init__(params, use_cuda)
         check_params(params, self.get_required_params(), self.get_optional_params())
         self.layer = self.params['layer']
         layers = ['LSTM', 'GRU', 'RNN']

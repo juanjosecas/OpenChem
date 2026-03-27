@@ -19,7 +19,7 @@ class MoleculeProtein2Label(OpenChemModel):
 
     """
     def __init__(self, params):
-        super(MoleculeProtein2Label, self).__init__(params)
+        super().__init__(params)
         self.mol_embedding = self.params['mol_embedding']
         self.mol_embed_params = self.params['mol_embedding_params']
         self.prot_embedding = self.params['prot_embedding']

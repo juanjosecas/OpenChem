@@ -25,7 +25,7 @@ from openchem.utils.utils_3d import calculate_xyz, calculate_zmat
 
 class MolecularRNNModel(OpenChemModel):
     def __init__(self, params):
-        super(MolecularRNNModel, self).__init__(params)
+        super().__init__(params)
         self.num_node_classes = params["num_node_classes"]
         self.num_edge_classes = params["num_edge_classes"]
         self.max_num_nodes = params["max_num_nodes"]
@@ -468,7 +468,7 @@ class MolecularRNNModel(OpenChemModel):
         return output
 
     def load_model(self, path):
-        super(MolecularRNNModel, self).load_model(path)
+        super().load_model(path)
         # TODO: load from original checkpoint if previous line fails
         # self.load_from_original_checkpoint(path)
 
@@ -498,7 +498,7 @@ class MolecularRNNModel(OpenChemModel):
                 if k.startswith(po):
                     kn = pn + k[len(po):]
             if kn is None:
-                raise AttributeError("Failed to map old key {}".format(k))
+                raise AttributeError(f"Failed to map old key {k}")
             params_new[kn] = v
         if len(params_new) != len(self.state_dict()):
             raise AttributeError("Incomplete mapping of old to new keys")

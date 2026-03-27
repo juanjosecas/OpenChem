@@ -13,7 +13,7 @@ from openchem.data.graph_data_layer import GraphDataset
 class SiameseDataset(Dataset):
     def __init__(self, filename, head1_type, head2_type, cols_to_read,
                  head1_arguments, head2_arguments):
-        super(SiameseDataset, self).__init__()
+        super().__init__()
         assert len(cols_to_read) == 3
         if head1_type == "smiles":
             cols_to_read = [cols_to_read[0]] + [cols_to_read[2]]
@@ -26,7 +26,7 @@ class SiameseDataset(Dataset):
                                          cols_to_read=[0, 2],
                                          **head1_arguments)
         else:
-            raise ArgumentError
+            raise TypeError(f"Unsupported dataset type: expected \"smiles\" or \"graphs\"")
         if head2_type == "smiles":
             head2_dataset = SmilesDataset(filename,
                                           cols_to_read=[1, 2],
@@ -37,7 +37,7 @@ class SiameseDataset(Dataset):
                                          cols_to_read=[1, 2],
                                          **head2_arguments)
         else:
-            raise ArgumentError
+            raise TypeError(f"Unsupported dataset type: expected \"smiles\" or \"graphs\"")
         self.head1_dataset = head1_dataset
         self.head2_dataset = head2_dataset
         #assert len(head1_dataset) == len(head2_dataset)

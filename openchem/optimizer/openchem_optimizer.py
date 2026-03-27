@@ -11,7 +11,7 @@
 import torch.optim
 
 
-class OpenChemOptimizer(object):
+class OpenChemOptimizer:
     def __init__(self, params, model_params):
         self.params = params[1]
         self._optimizer = params[0](model_params, **self.params)

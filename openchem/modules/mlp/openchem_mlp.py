@@ -9,14 +9,14 @@ from openchem.utils.utils import check_params
 class OpenChemMLP(nn.Module):
     """Base class for MLP module"""
     def __init__(self, params):
-        super(OpenChemMLP, self).__init__()
+        super().__init__()
         check_params(params, self.get_required_params(), self.get_optional_params())
         self.params = params
         self.hidden_size = self.params['hidden_size']
         self.input_size = [self.params['input_size']] + self.hidden_size[:-1]
         self.n_layers = self.params['n_layers']
         self.activation = self.params['activation']
-        if type(self.activation) is list:
+        if isinstance(self.activation, list):
             assert len(self.activation) == self.n_layers
         else:
             self.activation = [self.activation] * self.n_layers
@@ -64,14 +64,14 @@ class OpenChemMLP(nn.Module):
 class OpenChemMLPSimple(nn.Module):
     """Base class for MLP module"""
     def __init__(self, params):
-        super(OpenChemMLPSimple, self).__init__()
+        super().__init__()
         check_params(params, self.get_required_params(), self.get_optional_params())
         self.params = params
         self.hidden_size = self.params['hidden_size']
         self.input_size = [self.params['input_size']] + self.hidden_size[:-1]
         self.n_layers = self.params['n_layers']
         self.activation = self.params['activation']
-        if type(self.activation) is list:
+        if isinstance(self.activation, list):
             assert len(self.activation) == self.n_layers
         else:
             self.activation = [self.activation] * self.n_layers

@@ -1,12 +1,10 @@
 import time
 import math
-from six import string_types
 from collections import defaultdict
 
 import torch
 import glob
 import os
-import six
 
 
 def move_to_cuda(sample):
@@ -40,10 +38,7 @@ def get_latest_checkpoint(path):
 def deco_print(line, offset=0, start="*** ", end='\n'):
     # copy-pasted from
     # github.com/NVIDIA/OpenSeq2Seq/blob/master/open_seq2seq/utils/utils.py
-    if six.PY2:
-        print((start + " " * offset + line).encode('utf-8'), end=end)
-    else:
-        print(start + " " * offset + line, end=end)
+    print(start + " " * offset + line, end=end)
 
 
 def flatten_dict(dct):
@@ -52,7 +47,7 @@ def flatten_dict(dct):
     flat_dict = {}
     for key, value in dct.items():
         if isinstance(value, int) or isinstance(value, float) or \
-           isinstance(value, string_types) or isinstance(value, bool):
+           isinstance(value, str) or isinstance(value, bool):
             flat_dict.update({key: value})
         elif isinstance(value, dict):
             flat_dict.update({key + '/' + k: v for k, v in flatten_dict(dct[key]).items()})
@@ -81,7 +76,7 @@ def nested_update(org_dict, upd_dict):
         if isinstance(value, dict):
             if key in org_dict:
                 if not isinstance(org_dict[key], dict):
-                    raise ValueError("Mismatch between org_dict and upd_dict " "at node {}".format(key))
+                    raise ValueError(f"Mismatch between org_dict and upd_dict at node {key}")
                 nested_update(org_dict[key], value)
             else:
                 org_dict[key] = value
@@ -94,7 +89,7 @@ def time_since(since):
     m = math.floor(s / 60)
     s -= m * 60
 
-    return '%dm %ds' % (m, s)
+    return f'{m}m {s:.0f}s'
 
 
 def identity(input):
@@ -111,25 +106,25 @@ def check_params(config, required_dict, optional_dict):
 
     for pm, vals in required_dict.items():
         if pm not in config:
-            raise ValueError("{} parameter has to be specified".format(pm))
+            raise ValueError(f"{pm} parameter has to be specified")
         else:
             if vals == str:
-                vals = string_types
+                vals = (str,)
             if vals and isinstance(vals, list) and config[pm] not in vals:
-                raise ValueError("{} has to be one of {}".format(pm, vals))
+                raise ValueError(f"{pm} has to be one of {vals}")
             if vals and not isinstance(vals, list) and \
                     not isinstance(config[pm], vals):
-                raise ValueError("{} has to be of type {}".format(pm, vals))
+                raise ValueError(f"{pm} has to be of type {vals}")
 
     for pm, vals in optional_dict.items():
         if vals == str:
-            vals = string_types
+            vals = (str,)
         if pm in config:
             if vals and isinstance(vals, list) and config[pm] not in vals:
-                raise ValueError("{} has to be one of {}".format(pm, vals))
+                raise ValueError(f"{pm} has to be one of {vals}")
             if vals and not isinstance(vals, list) and \
                     not isinstance(config[pm], vals):
-                raise ValueError("{} has to be of type {}".format(pm, vals))
+                raise ValueError(f"{pm} has to be of type {vals}")
 
     # for pm in config:
     #     if pm not in required_dict and pm not in optional_dict:
