@@ -226,7 +226,7 @@ if __name__ == "__main__":
     reconstructed = sm_en.reverse_transform(v[0:5])
     for i, smile in enumerate(reconstructed):
         if smile != smiles[i]:
-            print("Error in reconstruction {} {}".format(smile, smiles[i]))
+            print(f"Error in reconstruction {smile} {smiles[i]}")
             break
 
     # test Pandas

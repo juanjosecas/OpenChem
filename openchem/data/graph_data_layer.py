@@ -266,7 +266,7 @@ class BFSGraphDataset(GraphDataset):
             for i in range(36):
                 classes[d_array >= 10.0*i] = i + 1
             padding_zeros = np.zeros((self.max_size - num_atoms, 3))
-            classes = np.concatenate((np.zeros(2), classes, -1*np.ones(self.max_size - num_atoms + 1)))
+            classes = np.concatenate((np.zeros(2), classes, -np.ones(self.max_size - num_atoms + 1)))
             xyz_bfs = np.concatenate((xyz_bfs, padding_zeros), axis=0)
         ii, jj = np.where(adj)
         max_prev_nodes_local = np.abs(ii - jj).max()
