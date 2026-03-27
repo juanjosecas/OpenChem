@@ -19,7 +19,7 @@ class Graph2Label(OpenChemModel):
 
     """
     def __init__(self, params):
-        super(Graph2Label, self).__init__(params)
+        super().__init__(params)
         self.encoder = self.params['encoder']
         self.encoder_params = self.params['encoder_params']
         self.Encoder = self.encoder(self.encoder_params, self.use_cuda)

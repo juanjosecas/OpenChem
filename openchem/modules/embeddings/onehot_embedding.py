@@ -4,7 +4,7 @@ from openchem.modules.embeddings.openchem_embedding import OpenChemEmbedding
 
 class OneHotEmbedding(OpenChemEmbedding):
     def __init__(self, params):
-        super(OneHotEmbedding, self).__init__(params)
+        super().__init__(params)
         if self.padding_idx is not None:
             weight = torch.eye(self.num_embeddings - 1)
             zero_row = torch.zeros(self.num_embeddings - 1).unsqueeze(0)

@@ -21,7 +21,7 @@ class SiameseModel(OpenChemModel):
 
     """
     def __init__(self, params):
-        super(SiameseModel, self).__init__(params)
+        super().__init__(params)
         self.head1_embedding = self.params['head1_embedding']
         self.head1_embed_params = self.params['head1_embedding_params']
         self.head2_embedding = self.params['head2_embedding']

@@ -200,7 +200,7 @@ def main():
             cmd = ["python",
                    "-u",
                    args.training_script,
-                   "--local_rank={}".format(local_rank)] + \
+                   f"--local_rank={local_rank}"] + \
                 args.training_script_args
 
             process = subprocess.Popen(cmd, env=current_env)
@@ -217,7 +217,7 @@ def main():
         cmd = ["python",
                "-u",
                args.training_script,
-               "--local_rank={}".format(-1)] + args.training_script_args
+               f"--local_rank={-1}"] + args.training_script_args
         process = subprocess.Popen(cmd, env=current_env)
 
         try:

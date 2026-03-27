@@ -5,7 +5,7 @@ import numpy as np
 import threading
 
 
-class Iterator(object):
+class Iterator:
     """Abstract base class for data iterators.
     # Arguments
         n: Integer, total number of samples in the dataset to loop over.
@@ -30,7 +30,7 @@ class Iterator(object):
     def _flow_index(self, n, batch_size=32, shuffle=False, seed=None):
         # Ensure self.batch_index is 0.
         self.reset()
-        while 1:
+        while True:
             if seed is not None:
                 np.random.seed(seed + self.total_batches_seen)
             if self.batch_index == 0:
@@ -72,9 +72,10 @@ class SmilesIterator(Iterator):
     """
     def __init__(self, x, y, smiles_data_generator, batch_size=32, shuffle=False, seed=None, dtype=np.float32):
         if y is not None and len(x) != len(y):
-            raise ValueError('X (images tensor) and y (labels) '
-                             'should have the same length. '
-                             'Found: X.shape = %s, y.shape = %s' % (np.asarray(x).shape, np.asarray(y).shape))
+            raise ValueError(
+                f'X (images tensor) and y (labels) should have the same length. '
+                f'Found: X.shape = {np.asarray(x).shape}, y.shape = {np.asarray(y).shape}'
+            )
 
         self.x = np.asarray(x)
 
@@ -84,7 +85,7 @@ class SmilesIterator(Iterator):
             self.y = None
         self.smiles_data_generator = smiles_data_generator
         self.dtype = dtype
-        super(SmilesIterator, self).__init__(x.shape[0], batch_size, shuffle, seed)
+        super().__init__(x.shape[0], batch_size, shuffle, seed)
 
     def next(self):
         """For python 2.x.
@@ -112,7 +113,7 @@ class SmilesIterator(Iterator):
         return batch_x, batch_y
 
 
-class SmilesEnumerator(object):
+class SmilesEnumerator:
     """SMILES Enumerator, vectorizer and devectorizer
     #Arguments
         charset: string containing the characters for the vectorization
@@ -146,8 +147,8 @@ class SmilesEnumerator(object):
     def charset(self, charset):
         self._charset = charset
         self._charlen = len(charset)
-        self._char_to_int = dict((c, i) for i, c in enumerate(charset))
-        self._int_to_char = dict((i, c) for i, c in enumerate(charset))
+        self._char_to_int = {c: i for i, c in enumerate(charset)}
+        self._int_to_char = {i: c for i, c in enumerate(charset)}
 
     def fit(self, smiles, extra_chars=[], extra_pad=5):
         """Performs extraction of the charset and length of a SMILES datasets
@@ -225,7 +226,7 @@ if __name__ == "__main__":
     reconstructed = sm_en.reverse_transform(v[0:5])
     for i, smile in enumerate(reconstructed):
         if smile != smiles[i]:
-            print("Error in reconstruction %s %s" % (smile, smiles[i]))
+            print("Error in reconstruction {} {}".format(smile, smiles[i]))
             break
 
     # test Pandas

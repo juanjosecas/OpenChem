@@ -7,7 +7,7 @@ from openchem.utils.utils import check_params
 class OpenChemEncoder(nn.Module):
     """Base class for embedding module"""
     def __init__(self, params, use_cuda=None):
-        super(OpenChemEncoder, self).__init__()
+        super().__init__()
         check_params(params, self.get_required_params(), self.get_required_params())
         self.params = params
         if use_cuda is None:

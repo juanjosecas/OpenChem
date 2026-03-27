@@ -13,7 +13,7 @@ from openchem.data.utils import get_tokens
 class SmilesProteinDataset(Dataset):
     def __init__(self, filename, tokenized=False, cols_to_read=None,
                  delimiter=',', mol_tokens=None, prot_tokens=None, pad=True):
-        super(SmilesProteinDataset, self).__init__()
+        super().__init__()
         if not tokenized:
             data = read_smiles_property_file(filename, cols_to_read, delimiter)
             smiles = data[0]
@@ -34,8 +34,8 @@ class SmilesProteinDataset(Dataset):
             self.molecules = clean_smiles
             self.proteins = proteins
         else:
-            f = open(filename, 'rb')
-            data = pickle.load(f)
+            with open(filename, 'rb') as f:
+                data = pickle.load(f)
             self.mol_tokens = data['smiles_tokens']
             self.prot_tokens = data['proteins_tokens']
             self.mol_num_tokens = len(data['smiles_tokens'])

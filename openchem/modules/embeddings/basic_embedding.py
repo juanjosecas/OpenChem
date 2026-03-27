@@ -5,7 +5,7 @@ from torch import nn
 
 class Embedding(OpenChemEmbedding):
     def __init__(self, params):
-        super(Embedding, self).__init__(params)
+        super().__init__(params)
         self.embedding_dim = self.params['embedding_dim']
         self.embedding = nn.Embedding(num_embeddings=self.num_embeddings,
                                       embedding_dim=self.embedding_dim,

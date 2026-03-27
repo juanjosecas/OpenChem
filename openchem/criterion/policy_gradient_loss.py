@@ -11,7 +11,7 @@ from openchem.data.utils import sanitize_smiles
 
 class PolicyGradientLoss(_Loss):
     def __init__(self, reward_fn, critic, fn, tokens=None, gamma=1.0, max_atom_bonds=None, enable_supervised_loss=False):
-        super(PolicyGradientLoss, self).__init__()
+        super().__init__()
         self.reward_fn = reward_fn
         self.gamma = gamma
         self.critic = critic

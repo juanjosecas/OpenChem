@@ -5,7 +5,7 @@ from openchem.utils.utils import check_params
 
 class OpenChemEmbedding(nn.Module):
     def __init__(self, params):
-        super(OpenChemEmbedding, self).__init__()
+        super().__init__()
         check_params(params, self.get_required_params(), self.get_optional_params())
         self.params = params
         self.num_embeddings = self.params['num_embeddings']

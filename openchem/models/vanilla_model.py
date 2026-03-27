@@ -1,13 +1,10 @@
-from __future__ import print_function
-from __future__ import division
-
 import numpy as np
 
 from sklearn.ensemble import RandomForestRegressor as RFR
 from sklearn.ensemble import RandomForestClassifier as RFC
 from sklearn.svm import SVC
 from sklearn.svm import SVR
-from sklearn.externals import joblib
+import joblib
 from sklearn import metrics
 
 from data import get_fp, get_desc, normalize_desc, cross_validation_split
@@ -15,9 +12,9 @@ from data import get_fp, get_desc, normalize_desc, cross_validation_split
 from mordred import Calculator, descriptors
 
 
-class RandomForestQSAR(object):
+class RandomForestQSAR:
     def __init__(self, model_type='classifier', feature_type='fingerprints', n_estimators=100, n_ensemble=5):
-        super(RandomForestQSAR, self).__init__()
+        super().__init__()
         self.n_estimators = n_estimators
         self.n_ensemble = n_ensemble
         self.model = []
@@ -116,9 +113,9 @@ class RandomForestQSAR(object):
         return clean_smiles, prediction, nan_smiles
 
 
-class SVMQSAR(object):
+class SVMQSAR:
     def __init__(self, model_type='classifier', n_ensemble=5):
-        super(SVMQSAR, self).__init__()
+        super().__init__()
         self.n_ensemble = n_ensemble
         self.model = []
         self.model_type = model_type

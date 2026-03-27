@@ -12,7 +12,7 @@ class CNNEncoder(OpenChemEncoder):
     """Convolutional encoder"""
 
     def __init__(self, params, use_cuda):
-        super(CNNEncoder, self).__init__(params, use_cuda)
+        super().__init__(params, use_cuda)
         check_params(params, self.get_required_params(),
                      self.get_optional_params())
         self.dropout = params['dropout']
@@ -20,7 +20,7 @@ class CNNEncoder(OpenChemEncoder):
         self.encoder_dim = params['encoder_dim']
         self.pooling = params['pooling']
         if self.pooling not in ['max', 'mean', 'sum']:
-            raise ValuError("Pooling must be one of 'max', 'mean', 'sum'")
+            raise ValueError("Pooling must be one of 'max', 'mean', 'sum'")
         kernel_sizes = params['kernel_sizes']
         assert len(kernel_sizes) > 0
         self.convolutions = nn.ModuleList()

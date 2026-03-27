@@ -1,4 +1,4 @@
-class OpenChemLRScheduler(object):
+class OpenChemLRScheduler:
     def __init__(self, params, optimizer):
         if params[0] is not None:
             self.params = params[1]

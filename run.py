@@ -10,8 +10,6 @@ import numpy as np
 import shutil
 import time
 
-from six import string_types
-
 import torch
 import torch.distributed as dist
 import torch.backends.cudnn as cudnn
@@ -66,8 +64,7 @@ def main():
         torch.cuda.set_device(args.local_rank)
         dist.init_process_group(backend=args.dist_backend,
                                 init_method='env://')
-        print('Distributed process with rank {:d} initalized'.format(
-              args.local_rank))
+        print(f'Distributed process with rank {args.local_rank:d} initalized')
 
     cudnn.benchmark = True
 
@@ -93,12 +90,11 @@ def main():
         # with command line arguments that were passed to the script
     parser_unk = argparse.ArgumentParser()
     for pm, value in flatten_dict(model_config).items():
-        if type(value) == int or type(value) == float or \
-                isinstance(value, string_types):
-            parser_unk.add_argument('--' + pm, default=value, type=type(value))
-        elif type(value) == bool:
+        if isinstance(value, bool):
             parser_unk.add_argument('--' + pm, default=value,
                                     type=ast.literal_eval)
+        elif isinstance(value, (int, float, str)):
+            parser_unk.add_argument('--' + pm, default=value, type=type(value))
 
     config_update = parser_unk.parse_args(unknown)
     nested_update(model_config, nest_dict(vars(config_update)))
@@ -112,14 +108,14 @@ def main():
             "force_checkpoint and continue_learning are " \
             "mutually exclusive flags"
         checkpoint = args.force_checkpoint
-        assert os.path.isfile(checkpoint), "{} is not a file".format(checkpoint)
+        assert os.path.isfile(checkpoint), f"{checkpoint} is not a file"
         cur_epoch = 0
     elif args.mode in ['eval', 'infer', 'predict'] or args.continue_learning:
         checkpoint = get_latest_checkpoint(ckpt_dir)
         if checkpoint is None:
-            raise IOError(
-                "Failed to find model checkpoint under "
-                "{}. Can't load the model".format(ckpt_dir)
+            raise OSError(
+                f"Failed to find model checkpoint under "
+                f"{ckpt_dir}. Can't load the model"
             )
         cur_epoch = int(os.path.basename(checkpoint).split("_")[-1]) + 1
     else:
@@ -128,19 +124,19 @@ def main():
 
     if not os.path.exists(logdir):
         comm.mkdir(logdir)
-        print('Directory {} created'.format(logdir))
+        print(f'Directory {logdir} created')
     elif os.path.isfile(logdir):
-        raise IOError(
+        raise OSError(
             "There is a file with the same name as \"logdir\" "
             "parameter. You should change the log directory path "
             "or delete the file to continue.")
 
     if not os.path.exists(ckpt_dir):
         comm.mkdir(ckpt_dir)
-        print('Directory {} created'.format(ckpt_dir))
+        print(f'Directory {ckpt_dir} created')
     elif os.path.isdir(ckpt_dir) and os.listdir(ckpt_dir) != []:
         if not args.continue_learning and args.mode not in ['eval', 'infer', 'predict']:
-            raise IOError(
+            raise OSError(
                 "Log directory is not empty. If you want to "
                 "continue learning, you should provide "
                 "\"--continue_learning\" flag")
@@ -150,9 +146,9 @@ def main():
     logger = setup_textlogger("openchem", doprint, tofile)
     msg = "Running with config:\n"
     for k, v in sorted(flatten_dict(model_config).items()):
-        msg += ("{}:\t{}\n".format(k, v)).expandtabs(50)
-    logger.info("Running on {:d} GPUs".format(comm.get_world_size()))
-    logger.info("Logging directory is set to {}".format(logdir))
+        msg += (f"{k}:\t{v}\n").expandtabs(50)
+    logger.info(f"Running on {comm.get_world_size():d} GPUs")
+    logger.info(f"Logging directory is set to {logdir}")
     logger.info(msg)
     if args.copy_config_file:
         shutil.copy(args.config_file, logdir)
@@ -188,7 +184,7 @@ def main():
 
     if args.mode == "predict" and ('predict_data_layer' not in model_config.keys()
                                    or model_config['predict_data_layer'] is None):
-        raise IOError(
+        raise OSError(
             "When model is run in 'predict' mode, "
             "prediction data layer must be specified")
 
@@ -205,7 +201,7 @@ def main():
     if args.mode in ["eval", "train_eval"] and (
             'val_data_layer' not in model_config.keys()
             or model_config['val_data_layer'] is None):
-        raise IOError(
+        raise OSError(
             "When model is run in 'eval' or 'train_eval' modes, "
             "validation data layer must be specified")
 
@@ -238,13 +234,13 @@ def main():
         model = DataParallel(model)
 
     if checkpoint is not None:
-        logger.info("Loading model from {}".format(checkpoint))
+        logger.info(f"Loading model from {checkpoint}")
         weights = torch.load(checkpoint, map_location=torch.device("cpu"))
         model.load_state_dict(weights)
     else:
         logger.info("Starting training from scratch")
     if args.mode in ["train", "train_eval"]:
-        logger.info("Training is set up from epoch {:d}".format(cur_epoch))
+        logger.info(f"Training is set up from epoch {cur_epoch:d}")
 
     criterion, optimizer, lr_scheduler = build_training(model, model_config)
 
@@ -276,12 +272,10 @@ def main():
             for i in range(1):
                 batch_smiles = model(None, batch_size=1024)
                 smiles.extend(batch_smiles)
-                print("Iteration {:d}: {:d} smiles".format(i+1, len(batch_smiles)))
+                print(f"Iteration {i+1:d}: {len(batch_smiles):d} smiles")
 
         if comm.get_world_size() > 1:
-            path = os.path.join(logdir, "debug_smiles_{:d}.txt".format(
-                comm.get_rank()
-            ))
+            path = os.path.join(logdir, f"debug_smiles_{comm.get_rank():d}.txt")
             with open(path, "w") as f:
                 for s in smiles:
                     f.write(s + "\n")
@@ -293,7 +287,7 @@ def main():
 
             smiles = []
             for i in range(comm.get_world_size()):
-                path = os.path.join(logdir, "debug_smiles_{:d}.txt".format(i))
+                path = os.path.join(logdir, f"debug_smiles_{i:d}.txt")
                 with open(path) as f:
                     smiles_local = f.readlines()
                 os.remove(path)
@@ -306,15 +300,13 @@ def main():
             for s in smiles:
                 f.write(s + "\n")
 
-        print("Generated {:d} molecules in {:.1f} seconds".format(
-            len(smiles), time.time() - start_time
-        ))
+        print(f"Generated {len(smiles):d} molecules in {time.time() - start_time:.1f} seconds")
 
         eval_metrics = model_config['eval_metrics']
         score = eval_metrics(None, smiles)
         qed_score = metrics.qed(smiles)
-        logger.info("Eval metrics = {:.2f}".format(score))
-        logger.info("QED score = {:.2f}".format(qed_score))
+        logger.info(f"Eval metrics = {score:.2f}")
+        logger.info(f"QED score = {qed_score:.2f}")
 
         smiles, idx = sanitize_smiles(
             smiles,

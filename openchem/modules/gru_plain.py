@@ -17,7 +17,7 @@ class GRUPlain(nn.Module):
                  has_output=False,
                  has_output_nonlin=False,
                  output_size=None):
-        super(GRUPlain, self).__init__()
+        super().__init__()
         self.num_layers = num_layers
         self.hidden_size = hidden_size
         self.has_input = has_input

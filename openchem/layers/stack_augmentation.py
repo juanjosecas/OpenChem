@@ -5,7 +5,7 @@ import torch.nn.functional as F
 
 class StackAugmentation(nn.Module):
     def __init__(self, stack_width, stack_depth, in_features, use_cuda):
-        super(StackAugmentation, self).__init__()
+        super().__init__()
         self.use_cuda = use_cuda
         self.stack_width = stack_width
         self.stack_depth = stack_depth

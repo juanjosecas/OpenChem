@@ -141,7 +141,7 @@ class Graph:
                         cur_features += list(cur_attr.one_hot_dict[node.attributes_dict[cur_attr.name]])
                     else:
                         cur_features += [node.attributes_dict[cur_attr.name]]
-                except:
+                except Exception:
                     raise ValueError("Attribute name " + cur_attr.name + " encountered an invalid value: " +
                           str(node.attributes_dict[cur_attr.name]) + " for molecule " + self.smiles)
             features.append(cur_features)
