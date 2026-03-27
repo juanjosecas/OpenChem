@@ -1,7 +1,7 @@
 # Reporte de Modernización del Código — OpenChem
 
 > **Contexto:** Este repositorio fue originalmente diseñado para Python 3.6/3.7.
-> El entorno actual de ejecución corre Python 3.12.  
+> El entorno actual de ejecución utiliza Python 3.12.  
 > Este reporte identifica patrones modernizables **sin proponer cambios al código de producción**:
 > solo documenta qué podría actualizarse, con qué prioridad y qué riesgos conlleva cada cambio.
 
